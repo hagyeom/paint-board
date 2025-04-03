@@ -42,11 +42,12 @@ function saveState(force = false) {
 }
 
 // 상태 복원
-function resotreState(state) {
+function restoreState(state) {
   let img = new Image();
   img.src = state;
   img.onload = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
   };
 }
 
@@ -54,16 +55,16 @@ function resotreState(state) {
 document.getElementById("undo").addEventListener("click", () => {
   if (history.length > 1) {
     redoStack.push(history.pop()); // 현재 상태를 redoStack에 저장
-    resotreState(history[history.length - 1]); // 이전 상태로 복원
+    restoreState(history[history.length - 1]); // 이전 상태로 복원
   }
 });
 
-// 다시 실행
+// 다시 실행 (Redo)
 document.getElementById("redo").addEventListener("click", () => {
   if (redoStack.length > 0) {
     let redoState = redoStack.pop();
     history.push(redoState);
-    resotreState(redoState);
+    restoreState(redoState);
   }
 });
 
@@ -83,3 +84,48 @@ colors.forEach((color) => {
   colorContainer.appendChild(div);
 });
 document.querySelector("#colors div").classList.add("selected");
+
+// 선 굵기 설정
+document.getElementById("lineWidth").addEventListener("input", (e) => {
+  lineWidth = e.target.value;
+});
+
+// 지우개 모드
+document.getElementById("eraser").addEventListener("click", () => {
+  isErasing = true;
+});
+
+// 그림 저장
+document.getElementById("save").addEventListener("click", () => {
+  const link = document.createElement("a");
+  link.download = "drawing.png";
+  link.href = canvas.toDataURL();
+  link.click();
+});
+
+// 그리기 이벤트 핸들러
+canvas.addEventListener("mousedown", () => {
+  drawing = true;
+  ctx.beginPath();
+});
+
+canvas.addEventListener("mousemove", (e) => {
+  if (drawing) {
+    ctx.strokeStyle = isErasing ? "#eef5ff" : currentColor;
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = "round";
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(e.offsetX, e.offsetY);
+  }
+});
+
+canvas.addEventListener("mouseup", () => {
+  drawing = false;
+  saveState(); // 선을 그린 후 상태 저장
+});
+
+// 초기화
+window.addEventListener("load", initializeCanvas);
+window.addEventListener("resize", initializeCanvas);
