@@ -128,4 +128,3 @@ canvas.addEventListener("mouseup", () => {
 
 // 초기화
 window.addEventListener("load", initializeCanvas);
-window.addEventListener("resize", initializeCanvas);
