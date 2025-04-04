@@ -1,0 +1,11 @@
+body {
+  background-color: #f8f9fa;
+}
+
+#photoCanvas {
+  border: 2px solid #333;
+  background-color: white;
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+}
