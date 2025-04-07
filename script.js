@@ -95,12 +95,15 @@ document.getElementById("eraser").addEventListener("click", () => {
   isErasing = true;
 });
 
-// 그림 저장
+// 그림 저장 (다른 이름으로 저장 가능)
 document.getElementById("save").addEventListener("click", () => {
-  const link = document.createElement("a");
-  link.download = "drawing.png";
-  link.href = canvas.toDataURL();
-  link.click();
+  const filename = prompt("저장할 파일명을 입력하세요:", "그림.png");
+  if (filename) {
+    const link = document.createElement("a");
+    link.download = filename.endsWith(".png") ? filename : filename + ".png";
+    link.href = canvas.toDataURL();
+    link.click();
+  }
 });
 
 // 그리기 이벤트 핸들러
@@ -121,10 +124,50 @@ canvas.addEventListener("mousemove", (e) => {
   }
 });
 
-canvas.addEventListener("mouseup", () => {
-  drawing = false;
-  saveState(); // 선을 그린 후 상태 저장
-});
-
 // 초기화
 window.addEventListener("load", initializeCanvas);
+
+const brushType = document.getElementById("brushType");
+
+// 마우스 이동 중 그리기 처리 수정
+canvas.addEventListener("mousemove", (e) => {
+  if (drawing) {
+    ctx.strokeStyle = isErasing ? "#eef5ff" : currentColor;
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = "round";
+
+    // 브러시 종류 처리
+    switch (brushType.value) {
+      case "normal":
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 1.0;
+        break;
+      case "bold":
+        ctx.setLineDash([]);
+        ctx.lineWidth = lineWidth * 2;
+        ctx.globalAlpha = 1.0;
+        break;
+      case "light":
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 0.3;
+        break;
+      case "dotted":
+        ctx.setLineDash([5, 10]);
+        ctx.globalAlpha = 1.0;
+        break;
+    }
+
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(e.offsetX, e.offsetY);
+  }
+});
+
+// 마우스 뗄 때 브러시 설정 초기화
+canvas.addEventListener("mouseup", () => {
+  drawing = false;
+  ctx.setLineDash([]); // 점선 초기화
+  ctx.globalAlpha = 1.0; // 투명도 초기화
+  saveState();
+});

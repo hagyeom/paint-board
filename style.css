@@ -35,3 +35,7 @@ canvas {
   width: 90vw;
   height: 60vh;
 }
+
+#brushType {
+  font-size: 14px;
+}
