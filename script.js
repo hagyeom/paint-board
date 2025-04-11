@@ -130,6 +130,7 @@ window.addEventListener("load", initializeCanvas);
 const brushType = document.getElementById("brushType");
 
 // 마우스 이동 중 그리기 처리 수정
+// 이벤트 리스너
 canvas.addEventListener("mousemove", (e) => {
   if (drawing) {
     ctx.strokeStyle = isErasing ? "#eef5ff" : currentColor;
@@ -138,11 +139,11 @@ canvas.addEventListener("mousemove", (e) => {
 
     // 브러시 종류 처리
     switch (brushType.value) {
-      case "normal":
-        ctx.setLineDash([]);
-        ctx.globalAlpha = 1.0;
+      case "normal": // 일반
+        ctx.setLineDash([]); // 점선 초기화
+        ctx.globalAlpha = 1.0; // 투명도 초기화
         break;
-      case "bold":
+      case "bold": // 두꺼운 붓
         ctx.setLineDash([]);
         ctx.lineWidth = lineWidth * 2;
         ctx.globalAlpha = 1.0;
